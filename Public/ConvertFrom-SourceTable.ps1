@@ -1,4 +1,4 @@
-#*------v Function ConvertFrom-SourceTable v------
+﻿#*------v Function ConvertFrom-SourceTable v------
 Function ConvertFrom-SourceTable {
   <#
   .SYNOPSIS
