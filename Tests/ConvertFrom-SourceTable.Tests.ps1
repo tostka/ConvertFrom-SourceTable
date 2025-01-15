@@ -1,162 +1,164 @@
 ﻿#Requires -Modules @{ModuleName="Pester"; ModuleVersion="4.4.0"}
 
-Set-StrictMode -Version 2
+BeforeAll {
+    Set-StrictMode -Version 2
 
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
-. "$here\$sut"
+    $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path).Replace(".Tests.", ".")
+    . "$here\$sut"
 
-Function Differentiate {
-	Param (
-		[Parameter(Position=0)][Object[]]$Expected, [Parameter(ValueFromPipeLine = $True)][Object[]]$Actual
-	)
-	$Property = ($Actual | Select-Object -First 1).PSObject.Properties | Select-Object -Expand Name
-	$DifferenceCount = @(Compare-Object $Expected $Actual -Property $Property).Count
-	If ($DifferenceCount) {
-		Write-Host 'Expected:' ($Expected | Out-String)
-		Write-Host 'Actual:' ($Actual | Out-String)
-	}
-	Write-Output $DifferenceCount
+    Function Differentiate {
+    	Param (
+    		[Parameter(Position=0)][Object[]]$Expected, [Parameter(ValueFromPipeLine = $True)][Object[]]$Actual
+    	)
+    	$Property = ($Actual | Select-Object -First 1).PSObject.Properties | Select-Object -Expand Name
+    	$DifferenceCount = @(Compare-Object $Expected $Actual -Property $Property).Count
+    	If ($DifferenceCount) {
+    		Write-Host 'Expected:' ($Expected | Out-String)
+    		Write-Host 'Actual:' ($Actual | Out-String)
+    	}
+    	Write-Output $DifferenceCount
+    }
+
+    $SimpleObject = @(
+    	[PSCustomObject]@{'Country' = 'Belgium'; 'Department' = 'Sales'; 'Name' = 'Aerts'},
+    	[PSCustomObject]@{'Country' = 'Germany'; 'Department' = 'Engineering'; 'Name' = 'Bauer'},
+    	[PSCustomObject]@{'Country' = 'England'; 'Department' = 'Sales'; 'Name' = 'Cook'},
+    	[PSCustomObject]@{'Country' = 'France'; 'Department' = 'Engineering'; 'Name' = 'Duval'},
+    	[PSCustomObject]@{'Country' = 'England'; 'Department' = 'Marketing'; 'Name' = 'Evans'},
+    	[PSCustomObject]@{'Country' = 'Germany'; 'Department' = 'Engineering'; 'Name' = 'Fischer'}
+    )
+
+    $ColorObject = @(
+    	[PSCustomObject]@{'Name' = 'Black';   'RGB' = @(0,0,0);       'Value' = 0},
+    	[PSCustomObject]@{'Name' = 'White';   'RGB' = @(255,255,255); 'Value' = 16777215},
+    	[PSCustomObject]@{'Name' = 'Red';     'RGB' = @(255,0,0);     'Value' = 16711680},
+    	[PSCustomObject]@{'Name' = 'Lime';    'RGB' = @(0,255,0);     'Value' = 65280},
+    	[PSCustomObject]@{'Name' = 'Blue';    'RGB' = @(0,0,255);     'Value' = 255},
+    	[PSCustomObject]@{'Name' = 'Yellow';  'RGB' = @(255,255,0);   'Value' = 16776960},
+    	[PSCustomObject]@{'Name' = 'Cyan';    'RGB' = @(0,255,255);   'Value' = 65535},
+    	[PSCustomObject]@{'Name' = 'Magenta'; 'RGB' = @(255,0,255);   'Value' = 16711935},
+    	[PSCustomObject]@{'Name' = 'Silver';  'RGB' = @(192,192,192); 'Value' = 12632256},
+    	[PSCustomObject]@{'Name' = 'Gray';    'RGB' = @(128,128,128); 'Value' = 8421504},
+    	[PSCustomObject]@{'Name' = 'Maroon';  'RGB' = @(128,0,0);     'Value' = 8388608},
+    	[PSCustomObject]@{'Name' = 'Olive';   'RGB' = @(128,128,0);   'Value' = 8421376},
+    	[PSCustomObject]@{'Name' = 'Green';   'RGB' = @(0,128,0);     'Value' = 32768},
+    	[PSCustomObject]@{'Name' = 'Purple';  'RGB' = @(128,0,128);   'Value' = 8388736},
+    	[PSCustomObject]@{'Name' = 'Teal';    'RGB' = @(0,128,128);   'Value' = 32896},
+    	[PSCustomObject]@{'Name' = 'Navy';    'RGB' = @(0,0,128);     'Value' = 128}
+    )
+
+    $VersionObject = @(
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'First design'
+    			'Date' = [datetime]'2018-05-03'
+    			'Version' = [version]'0.0.10'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'Pester ready version'
+    			'Date' = [datetime]'2018-05-09'
+    			'Version' = [version]'0.0.20'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'removed support for String[] types'
+    			'Date' = [datetime]'2018-05-09'
+    			'Version' = [version]'0.0.21'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'Better "right aligned" definition'
+    			'Date' = [datetime]'2018-05-24'
+    			'Version' = [version]'0.0.22'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'Resolved single column bug'
+    			'Date' = [datetime]'2018-05-25'
+    			'Version' = [version]'0.0.23'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'Treating markdown table input as an option'
+    			'Date' = [datetime]'2018-05-26'
+    			'Version' = [version]'0.0.24'
+    	},
+    	[PSCustomObject]@{
+    			'Author' = 'Ronald Bode'
+    			'Comments' = 'Resolved error due to blank top lines'
+    			'Date' = [datetime]'2018-05-27'
+    			'Version' = [version]'0.0.25'
+    	}
+    )
+
+    $TypeObject = @(
+    	[PSCustomObject]@{
+    		'Type' = 'String'
+    		'Value' = 'Hello World'
+    		'PowerShell' = 'Hello World'
+    		'Output' = 'Hello World'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Number'
+    		'Value' = 123
+    		'PowerShell' = 123
+    		'Output' = 123
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Null'
+    		'Value' = $Null
+    		'PowerShell' = $Null
+    		'Output' = ''
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Boolean'
+    		'Value' = $True
+    		'PowerShell' = $True
+    		'Output' = 'True'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Boolean'
+    		'Value' = $False
+    		'PowerShell' = $False
+    		'Output' = 'False'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'DateTime'
+    		'Value' = [DateTime]'1963-10-07T21:47:00.0000000'
+    		'PowerShell' = [DateTime]'1963-10-07T21:47:00.0000000'
+    		'Output' = '1963-10-07 9:47:00 PM'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Array'
+    		'Value' = @(1, 'Two')
+    		'PowerShell' = @(1, 'Two')
+    		'Output' = '{1, two}'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'HashTable'
+    		'Value' = @{'One' = 1; 'Two' = 2}
+    		'PowerShell' = @{'One' = 1; 'Two' = 2}
+    		'Output' = '{One, Two}'
+    	},
+    	[PSCustomObject]@{
+    		'Type' = 'Object'
+    		'Value' = [PSCustomObject]@{'One' = 1; 'Two' = 2}
+    		'PowerShell' = [PSCustomObject]@{'One' = 1; 'Two' = 2}
+    		'Output' = '@{One=1; Two=2}'
+    	}
+    )
+
+    $DirObject = @(
+    	[PSCustomObject]@{'LastWriteTime' = '11/16/2018   8:30 PM'; 'Length' = '';       'Mode' = 'd----l'; 'Name' = 'Archive'}
+    	[PSCustomObject]@{'LastWriteTime' = '5/22/2018  12:05 PM';  'Length' = '(726)';  'Mode' = '-a---l'; 'Name' = 'Build-Expression.ps1'}
+    	[PSCustomObject]@{'LastWriteTime' = '11/16/2018   7:38 PM'; 'Length' = '2143';   'Mode' = '-a---l'; 'Name' = 'CHANGELOG'}
+    	[PSCustomObject]@{'LastWriteTime' = '11/17/2018  10:42 AM'; 'Length' = '14728';  'Mode' = '-a---l'; 'Name' = 'ConvertFrom-SourceTable.ps1'}
+    	[PSCustomObject]@{'LastWriteTime' = '11/17/2018  11:04 AM'; 'Length' = '23909';  'Mode' = '-a---l'; 'Name' = 'ConvertFrom-SourceTable.Tests.ps1'}
+    	[PSCustomObject]@{'LastWriteTime' = '8/4/2018  11:04 AM';   'Length' = '(6237)'; 'Mode' = '-a---l'; 'Name' = 'Import-SourceTable.ps1'}
+    )
 }
-
-$SimpleObject = @(
-	[PSCustomObject]@{'Country' = 'Belgium'; 'Department' = 'Sales'; 'Name' = 'Aerts'},
-	[PSCustomObject]@{'Country' = 'Germany'; 'Department' = 'Engineering'; 'Name' = 'Bauer'},
-	[PSCustomObject]@{'Country' = 'England'; 'Department' = 'Sales'; 'Name' = 'Cook'},
-	[PSCustomObject]@{'Country' = 'France'; 'Department' = 'Engineering'; 'Name' = 'Duval'},
-	[PSCustomObject]@{'Country' = 'England'; 'Department' = 'Marketing'; 'Name' = 'Evans'},
-	[PSCustomObject]@{'Country' = 'Germany'; 'Department' = 'Engineering'; 'Name' = 'Fischer'}
-)
-
-$ColorObject = @(
-	[PSCustomObject]@{'Name' = 'Black';   'RGB' = @(0,0,0);       'Value' = 0},
-	[PSCustomObject]@{'Name' = 'White';   'RGB' = @(255,255,255); 'Value' = 16777215},
-	[PSCustomObject]@{'Name' = 'Red';     'RGB' = @(255,0,0);     'Value' = 16711680},
-	[PSCustomObject]@{'Name' = 'Lime';    'RGB' = @(0,255,0);     'Value' = 65280},
-	[PSCustomObject]@{'Name' = 'Blue';    'RGB' = @(0,0,255);     'Value' = 255},
-	[PSCustomObject]@{'Name' = 'Yellow';  'RGB' = @(255,255,0);   'Value' = 16776960},
-	[PSCustomObject]@{'Name' = 'Cyan';    'RGB' = @(0,255,255);   'Value' = 65535},
-	[PSCustomObject]@{'Name' = 'Magenta'; 'RGB' = @(255,0,255);   'Value' = 16711935},
-	[PSCustomObject]@{'Name' = 'Silver';  'RGB' = @(192,192,192); 'Value' = 12632256},
-	[PSCustomObject]@{'Name' = 'Gray';    'RGB' = @(128,128,128); 'Value' = 8421504},
-	[PSCustomObject]@{'Name' = 'Maroon';  'RGB' = @(128,0,0);     'Value' = 8388608},
-	[PSCustomObject]@{'Name' = 'Olive';   'RGB' = @(128,128,0);   'Value' = 8421376},
-	[PSCustomObject]@{'Name' = 'Green';   'RGB' = @(0,128,0);     'Value' = 32768},
-	[PSCustomObject]@{'Name' = 'Purple';  'RGB' = @(128,0,128);   'Value' = 8388736},
-	[PSCustomObject]@{'Name' = 'Teal';    'RGB' = @(0,128,128);   'Value' = 32896},
-	[PSCustomObject]@{'Name' = 'Navy';    'RGB' = @(0,0,128);     'Value' = 128}
-)
-
-$VersionObject = @(
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'First design'
-			'Date' = [datetime]'2018-05-03'
-			'Version' = [version]'0.0.10'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'Pester ready version'
-			'Date' = [datetime]'2018-05-09'
-			'Version' = [version]'0.0.20'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'removed support for String[] types'
-			'Date' = [datetime]'2018-05-09'
-			'Version' = [version]'0.0.21'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'Better "right aligned" definition'
-			'Date' = [datetime]'2018-05-24'
-			'Version' = [version]'0.0.22'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'Resolved single column bug'
-			'Date' = [datetime]'2018-05-25'
-			'Version' = [version]'0.0.23'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'Treating markdown table input as an option'
-			'Date' = [datetime]'2018-05-26'
-			'Version' = [version]'0.0.24'
-	},
-	[PSCustomObject]@{
-			'Author' = 'Ronald Bode'
-			'Comments' = 'Resolved error due to blank top lines'
-			'Date' = [datetime]'2018-05-27'
-			'Version' = [version]'0.0.25'
-	}
-)
-
-$TypeObject = @(
-	[PSCustomObject]@{
-		'Type' = 'String'
-		'Value' = 'Hello World'
-		'PowerShell' = 'Hello World'
-		'Output' = 'Hello World'
-	},
-	[PSCustomObject]@{
-		'Type' = 'Number'
-		'Value' = 123
-		'PowerShell' = 123
-		'Output' = 123
-	},
-	[PSCustomObject]@{
-		'Type' = 'Null'
-		'Value' = $Null
-		'PowerShell' = $Null
-		'Output' = ''
-	},
-	[PSCustomObject]@{
-		'Type' = 'Boolean'
-		'Value' = $True
-		'PowerShell' = $True
-		'Output' = 'True'
-	},
-	[PSCustomObject]@{
-		'Type' = 'Boolean'
-		'Value' = $False
-		'PowerShell' = $False
-		'Output' = 'False'
-	},
-	[PSCustomObject]@{
-		'Type' = 'DateTime'
-		'Value' = [DateTime]'1963-10-07T21:47:00.0000000'
-		'PowerShell' = [DateTime]'1963-10-07T21:47:00.0000000'
-		'Output' = '1963-10-07 9:47:00 PM'
-	},
-	[PSCustomObject]@{
-		'Type' = 'Array'
-		'Value' = @(1, 'Two')
-		'PowerShell' = @(1, 'Two')
-		'Output' = '{1, two}'
-	},
-	[PSCustomObject]@{
-		'Type' = 'HashTable'
-		'Value' = @{'One' = 1; 'Two' = 2}
-		'PowerShell' = @{'One' = 1; 'Two' = 2}
-		'Output' = '{One, Two}'
-	},
-	[PSCustomObject]@{
-		'Type' = 'Object'
-		'Value' = [PSCustomObject]@{'One' = 1; 'Two' = 2}
-		'PowerShell' = [PSCustomObject]@{'One' = 1; 'Two' = 2}
-		'Output' = '@{One=1; Two=2}'
-	}
-)
-
-$DirObject = @(
-	[PSCustomObject]@{'LastWriteTime' = '11/16/2018   8:30 PM'; 'Length' = '';       'Mode' = 'd----l'; 'Name' = 'Archive'}
-	[PSCustomObject]@{'LastWriteTime' = '5/22/2018  12:05 PM';  'Length' = '(726)';  'Mode' = '-a---l'; 'Name' = 'Build-Expression.ps1'}
-	[PSCustomObject]@{'LastWriteTime' = '11/16/2018   7:38 PM'; 'Length' = '2143';   'Mode' = '-a---l'; 'Name' = 'CHANGELOG'}
-	[PSCustomObject]@{'LastWriteTime' = '11/17/2018  10:42 AM'; 'Length' = '14728';  'Mode' = '-a---l'; 'Name' = 'ConvertFrom-SourceTable.ps1'}
-	[PSCustomObject]@{'LastWriteTime' = '11/17/2018  11:04 AM'; 'Length' = '23909';  'Mode' = '-a---l'; 'Name' = 'ConvertFrom-SourceTable.Tests.ps1'}
-	[PSCustomObject]@{'LastWriteTime' = '8/4/2018  11:04 AM';   'Length' = '(6237)'; 'Mode' = '-a---l'; 'Name' = 'Import-SourceTable.ps1'}
-)
 
 Describe 'ConvertFrom-Table' {
 	
